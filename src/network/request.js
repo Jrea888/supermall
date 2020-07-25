@@ -3,13 +3,13 @@ import axios from 'axios'
 export function request(config){ 
     // 1.创建对象
     const instance = axios.create({
-        baseURL:'http://123.207.32.32:8000',
+        baseURL:'http://152.136.185.210:8000',
         timeout:5000
     });
 
     // 2.axios 拦截器  拦截请求 拦截响应 
     instance.interceptors.request.use(config => {
-        console.log(config,"请求配置信息");
+        // console.log(config,"请求配置信息");
         // 1.config 里面的信息不符合服务器的要求
 
         // 2.发送网络请求时，希望界面显示一个图片
