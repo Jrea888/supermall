@@ -1,6 +1,6 @@
 <template>
     <div class="goods-item">
-        <img :src="goodsItem.show.img" alt="" @load="imageLoad"> 
+        <img :src="goodsItem.show.img" alt="" @load="imageLoad" @click="itContentPage"> 
         <div class="goods-item-title">
             <p>{{goodsItem.title}}...</p>
             <span class="price">{{goodsItem.price}}</span>
@@ -23,9 +23,14 @@ export default {
     },
     methods:{
         imageLoad(){
-            // 发射出给总线一个事件
+            // 发射出一个事件总线
             console.log("图片加载发出事件！");
             this.$bus.$emit("itemImageLoad");
+        },
+        itContentPage(){
+            console.log("点击详情页！"); 
+            // 跳转 动态传ID push 到路由中的某一个路径
+            this.$router.push('/detail/'+this.goodsItem.iid)
         }
     }
 }

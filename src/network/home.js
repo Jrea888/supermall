@@ -8,7 +8,7 @@ export function getHomeBannerInfo() {
 
 export function getHomeListData(type,page){
     return request({
-        url:'/api/n3/home/data',
+        url:'/home/data',
         params:{
             type,
             page
