@@ -30,7 +30,8 @@ import NavBar from 'components/common/navbar/NavTab'
         },
         methods:{
             changeActive(index){
-                this.currentIndex = index
+                this.currentIndex = index;
+                this.$emit('itemClick',index);
             },
             imageReturn(){
                 this.$router.back()

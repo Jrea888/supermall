@@ -30,7 +30,7 @@
     methods:{
       imageLoad(){
           if(++this.counter === this.imageLength){
-            console.log("图片加载");
+            console.log("所有详情图片加载完！");
             this.$emit("imageLoad");
           }
       }
