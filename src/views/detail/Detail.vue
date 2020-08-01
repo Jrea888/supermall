@@ -1,33 +1,33 @@
 <template> 
     <div  id="detail">    
-        <detail-nav class="title_top" @itemClick="tabClick"></detail-nav>
-        <scroll class="content" ref="scroll">
+        <detail-nav class="title_top" @itemClick="tabClick" ref="detailNav"></detail-nav> 
+        <scroll class="content" ref="scroll" @scroll="contentScroll" :probe-type="3">
             <detail-swipper :topImageInfo="topImages"></detail-swipper>
             <detail-bases-info :goods="goods"></detail-bases-info> 
             <detail-shop-info :shop="shop"></detail-shop-info>
             <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
             <detail-param-info ref="params" :param-info="paramInfo"></detail-param-info>
             <detail-comment-info ref="comment" :comment-info="commentInfo"></detail-comment-info> 
-            <detail-recommend-info ref="recommend" :recommend-list="recommendList"></detail-recommend-info>
+            <GoodsListTwo ref="recommend" :goods="recommendList"></GoodsListTwo>
         </scroll>
     </div>
 </template>
 
 <script>
-
 import DetailNav from './childComps/DetailNav'
 import DetailSwipper from './childComps/DetailSwipper'
 import DetailBasesInfo from './childComps/DetailBasesInfo'
 import DetailShopInfo from './childComps/DetailShopInfo'
 import DetailGoodsInfo from './childComps/DetailGoodsInfo'
 import DetailParamInfo from './childComps/DetailParamInfo'
-import DetailCommentInfo from './childComps/DetailCommentInfo'
-import DetailRecommendInfo from './childComps/DetailRecommendInfo' 
+import DetailCommentInfo from './childComps/DetailCommentInfo' 
 
 import Scroll from 'components/common/scroll/Scroll'
+import GoodsListTwo from 'components/content/goodtwo/GoodsListTwo' 
 
 import {getDetailInfo,getRecommend,Goods,Shop,GoodsParam} from 'network/detail'
 import {debounce} from 'common/utils'
+
     export default {
         name:'Detail',
         data(){
@@ -42,6 +42,8 @@ import {debounce} from 'common/utils'
                 recommendList:[],
                 offetTopScroll:[],
                 getThemeTopY:null, 
+                currentIndex:0,
+                reduce:60
             }
         },        
         components:{
@@ -51,29 +53,30 @@ import {debounce} from 'common/utils'
             DetailShopInfo,
             DetailGoodsInfo,
             DetailParamInfo,
-            DetailCommentInfo,
-            DetailRecommendInfo, 
-            Scroll
+            DetailCommentInfo,  
+            Scroll,
+            GoodsListTwo,
         }, 
         created(){
             // 1.保存iid
             this.iid = this.$route.params.iid;
-            // 2.请求数据
+            // 2.请求数据 
             getDetailInfo(this.iid).then(res => {
+                // console.log(res,"数据");
                 const data = res.result;
                 // 1.获取轮播数据
                 this.topImages = data.itemInfo.topImages;
-                console.log(res);
+                
                 // 2.数据整合
                 this.goods = new Goods(data.itemInfo,data.columns,data.shopInfo.services);
-                console.log(this.goods);
+                // console.log(this.goods,"数据整合");
                 // 3.获取商品信息
                 this.shop = new Shop(data.shopInfo);
-                console.log(this.shop);
+                // console.log(this.shop);
                 // 4.获取图片数据
                 this.detailInfo = data.detailInfo;
                 // 5.获取保存参数尺码信息
-                this.paramInfo = new GoodsParam(data.itemParams.info,data.itemParams.rule);
+                this.paramInfo = new GoodsParam(data.itemParams.info,data.itemParams.rule); 
                 // 6.获取评论信息
                 if (data.rate.list) {
                     this.commentInfo = data.rate.list[0];
@@ -89,31 +92,55 @@ import {debounce} from 'common/utils'
                 // });
                 
                 // 防抖动
-                this.getThemeTopY = debounce(() => {
-                    console.log("----");
+                this.getThemeTopY = debounce(() => { 
                     this.offetTopScroll = []
                     this.offetTopScroll.push(0);
-                    this.offetTopScroll.push(this.$refs.params.$el.offsetTop);
-                    this.offetTopScroll.push(this.$refs.comment.$el.offsetTop);
-                    this.offetTopScroll.push(this.$refs.recommend.$el.offsetTop);
-                    console.log(this.offetTopScroll,"offsetTop");
-                },100)
+                    this.offetTopScroll.push(this.$refs.params.$el.offsetTop-this.reduce);
+                    this.offetTopScroll.push(this.$refs.comment.$el.offsetTop-this.reduce);
+                    this.offetTopScroll.push(this.$refs.recommend.$el.offsetTop-this.reduce);
+                    this.offetTopScroll.push(Number.MAX_VALUE);
+                    // console.log(this.offetTopScroll,"offsetTop");
+                },200)
             });
             // 获取推荐信息
-            getRecommend().then((res, error) => { 
-                // this.recommendList = res.data.list
-                console.log(res.data.list,"推荐信息");
+            getRecommend().then(res => { 
+                this.recommendList = res.data.list 
             })
         },
         methods:{
             // 详情图片加载完成 回调
             imageLoad(){
+                // 滚动图片刷新的目的是为了让图片全部加载 得到图片的高度
                 this.$refs.scroll.refresh();
-                 this.getThemeTopY();
+                this.getThemeTopY();
             },
-            tabClick(index){
-                console.log(index);
+            tabClick(index){ 
                 this.$refs.scroll.scrollTo(0,-this.offetTopScroll[index],200);
+            },
+            contentScroll(position){ 
+                // 1.获取Y值
+                const positionY = -position.y;
+                // 2.positionY与主题中的值比较
+                // [0, 15576, 16126, 16416] "offsetTop"
+                /*
+                    positionY 在 0 和 15576之间，index = 0
+                    positionY 在 15576 和 16126 之间，index = 1
+                    positionY 在 16126 和 16416 之间，index = 2
+                    positionY 在 16416 和 较大值 之间，index = 3
+                */ 
+               let length = this.offetTopScroll.length; 
+               for(let i = 0; i < length - 1; i++){
+                   if(this.currentIndex !== i && (positionY >= this.offetTopScroll[i] && positionY < this.offetTopScroll[i+1])){
+                        this.currentIndex = i;
+                       this.$refs.detailNav.currentIndex = this.currentIndex; 
+                   }
+
+                //    if(this.currentIndex !== i && ((i < length - 1 && positionY >= this.offetTopScroll[i] && positionY < this.offetTopScroll[i+1])  
+                //    || (i === length - 1 && positionY >= this.offetTopScroll[i]))){
+                //        this.currentIndex = i;
+                //        this.$refs.detailNav.currentIndex = this.currentIndex; 
+                //    }
+               }  
             }
         }
     }
@@ -124,11 +151,10 @@ import {debounce} from 'common/utils'
     position: relative;
     z-index: 12;
     height: 100vh;
-    z-index: 1;
     background-color: #fff;
 }
 .content{
-    height: calc(100% - 44px);
+    height: calc(100% - 49px);
 }
 .title {    
     box-shadow: 0px 5px 10px rgba(150,150,150,.08);
@@ -155,4 +181,10 @@ import {debounce} from 'common/utils'
     z-index: 10;
     background-color: #fff; 
 }
+.info-header {
+    line-height: 40px;
+    padding-left: 8px;
+    font-size: 15px;
+    color: #333;
+} 
 </style>

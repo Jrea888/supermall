@@ -118,7 +118,7 @@ import {debounce} from 'common/utils'
       },
       // 返回顶部 
       backClick(){
-        console.log("backClick");
+        // console.log("backClick");
         // 面向组件的封装 
         this.$refs.scroll.scrollTo(0, 0, 500)
       },
@@ -132,17 +132,16 @@ import {debounce} from 'common/utils'
       },
       loadMove(){
         this.getGoodsListData(this.indexCurrent);
-        console.log("完成上拉加载","loadMove");
+        // console.log("完成上拉加载","loadMove");
         // 异步加载图片时的问题  刷新一次
         // this.$refs.scroll.refresh();
       },
       swiperImageLoad(){
-      // 获取tabControl的offsetTop，所有的组件都有一个属性$el:用于获取组件的元素
-          console.log(this.$refs.tabControl2.$el.offsetTop,"最大图片加载完成之后");
-          this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
-          console.log(this.tabOffsetTop);
+        // 获取tabControl的offsetTop，所有的组件都有一个属性$el:用于获取组件的元素
+        // console.log(this.$refs.tabControl2.$el.offsetTop,"最大图片加载完成之后");
+        this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
+        // console.log(this.tabOffsetTop);
       },
-
 
       // 网络请求方法
       getMultiData(){
@@ -160,7 +159,6 @@ import {debounce} from 'common/utils'
           this.goods[type].list.push(...res.data.list);
           // 页码j加 1 
           this.goods[type].page += 1;
-
           // 加载后 必须调用此方法 才可以继续下一步下拉加载
           this.$refs.scroll.finishPullUp();
         })
@@ -172,7 +170,6 @@ import {debounce} from 'common/utils'
 
 <style scoped> 
 #home {
-  /* padding-top: 49px; */
   height: 100vh;
 }
 .home_nav {
@@ -183,6 +180,7 @@ import {debounce} from 'common/utils'
 .content {
   height: calc(100% - 47px);
   overflow: hidden;  
+
   /* position: absolute;
   left: 0;
   right:0;

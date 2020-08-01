@@ -8,7 +8,9 @@
     </div>
     <div class="info-key">{{detailInfo.detailImage[0].key}}</div>
     <div class="info-list">
-      <img v-for="(item, index) in detailInfo.detailImage[0].list" :src="item" @load="imageLoad">
+      <img v-for="(item, index) in detailInfo.detailImage[0].list"
+          :src="item" 
+          @load="imageLoad">
     </div>
   </div>
 </template>
@@ -29,13 +31,14 @@
     },
     methods:{
       imageLoad(){
-          if(++this.counter === this.imageLength){
-            console.log("所有详情图片加载完！");
-            this.$emit("imageLoad");
-          }
+        // 计数目的是为了 使图片加载完
+        if(++this.counter === this.imageLength){
+          this.$emit("imageLoad");
+        }
       }
     },
     watch:{
+      // 监听变量
       detailInfo(){
         this.imageLength = this.detailInfo.detailImage[0].list.length;
       }
