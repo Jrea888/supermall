@@ -1,24 +1,26 @@
 <template> 
-    <div id="home" class="wrapper">
+    <div id="home">
       <nav-tab class="home_nav"><div slot="center">购物街</div></nav-tab>  
       <tab-control ref="tabControl1" 
             :titles="['流行','新款','精选']" 
             @tabClick="tabNavControl" v-show="isTabFixed"></tab-control>
       <!-- better-scroll 滚动封装组件 -->
-      <scroll class="content" 
-              ref="scroll" 
-              :probeType="3" 
-              @scroll="contentScroll"
-              @pullingUp="loadMove"
-              :pull-up-load="true">
-          <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"></home-swiper>
-          <home-recommend-view :recommends="recommends"></home-recommend-view>
-          <future-view></future-view>
-          <tab-control ref="tabControl2" 
-                      :titles="['流行','新款','精选']" 
-                      @tabClick="tabNavControl"></tab-control>
-          <goods-list :goods="goods[showGoods].list"/>
-      </scroll>
+      <div  class="wrapper">
+        <scroll class="content" 
+                ref="scroll" 
+                :probeType="3" 
+                @scroll="contentScroll"
+                @pullingUp="loadMove"
+                :pull-up-load="true">
+            <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"></home-swiper>
+            <home-recommend-view :recommends="recommends"></home-recommend-view>
+            <future-view></future-view>
+            <tab-control ref="tabControl2" 
+                        :titles="['流行','新款','精选']" 
+                        @tabClick="tabNavControl"></tab-control>
+            <goods-list :goods="goods[showGoods].list"/>
+        </scroll>
+      </div>
       <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
     </div>
 </template>
@@ -35,7 +37,9 @@ import Scroll from 'components/common/scroll/Scroll'
 import BackTop from 'components/content/backTop/BackTop'
 
 import {getHomeBannerInfo,getHomeListData} from 'network/home';
-import {debounce} from 'common/utils'
+import {debounce} from 'common/utils' 
+import {NEW, POP, SELL} from "common/const";
+import {backTopMinix} from 'common/mixin'
 
   export default {
     name: 'Home',
@@ -49,13 +53,13 @@ import {debounce} from 'common/utils'
           'new':{page:0,list:[]},
           'sell':{page:0,list:[]}
         },
-        indexCurrent:'pop',
-        isShowBackTop:false,
+        indexCurrent:POP, 
         tabOffsetTop:0,
         isTabFixed:false,
         saveY:0
       }
     },
+    mixins:[backTopMinix],
     components:{
       FutureView,
       HomeSwiper,
@@ -104,29 +108,23 @@ import {debounce} from 'common/utils'
       tabNavControl(index){  
         switch(index){
           case 0:
-            this.indexCurrent = 'pop'
+            this.indexCurrent = POP
             break;
           case 1:
-            this.indexCurrent = 'new'
+            this.indexCurrent = NEW
             break;
           case 2:
-            this.indexCurrent = 'sell'
+            this.indexCurrent = SELL
             break;
         }
         this.$refs.tabControl1.indexCurrent = index;
         this.$refs.tabControl2.indexCurrent = index;
-      },
-      // 返回顶部 
-      backClick(){
-        // console.log("backClick");
-        // 面向组件的封装 
-        this.$refs.scroll.scrollTo(0, 0, 500)
-      },
+      }, 
       // 返回距离图表 是否 显示
       contentScroll(position){
         // console.log(position);
         // 1.判断backTop是否显示
-        this.isShowBackTop = (-position.y) > 1000;
+        this.listenShowTop(position);
         // 2.决定tabControl是否吸顶
         this.isTabFixed = (-position.y) > this.tabOffsetTop;
       },
@@ -176,9 +174,11 @@ import {debounce} from 'common/utils'
   background-color: var(--color-tint);
   color: #fff;
 } 
-
-.content {
-  height: calc(100% - 47px);
+.wrapper {
+  height: calc(100% - 49px - 48px);
+}
+.content { 
+  height: 100%;
   overflow: hidden;  
 
   /* position: absolute;

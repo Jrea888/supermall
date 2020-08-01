@@ -14,7 +14,7 @@ export default {
 .back-top{
     position: fixed;
     right: 10px;
-    bottom: 45px;
+    bottom: 55px;
     text-align: right;
 }
 .back-top img {

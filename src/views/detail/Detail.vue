@@ -2,14 +2,21 @@
     <div  id="detail">    
         <detail-nav class="title_top" @itemClick="tabClick" ref="detailNav"></detail-nav> 
         <scroll class="content" ref="scroll" @scroll="contentScroll" :probe-type="3">
-            <detail-swipper :topImageInfo="topImages"></detail-swipper>
-            <detail-bases-info :goods="goods"></detail-bases-info> 
-            <detail-shop-info :shop="shop"></detail-shop-info>
-            <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
-            <detail-param-info ref="params" :param-info="paramInfo"></detail-param-info>
-            <detail-comment-info ref="comment" :comment-info="commentInfo"></detail-comment-info> 
-            <GoodsListTwo ref="recommend" :goods="recommendList"></GoodsListTwo>
+            <ul>
+                <li v-for="item in $store.state.cartList">{{item}}</li>
+            </ul>
+            <div> 
+                <detail-swipper :topImageInfo="topImages"></detail-swipper>
+                <detail-bases-info :goods="goods"></detail-bases-info> 
+                <detail-shop-info :shop="shop"></detail-shop-info>
+                <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
+                <detail-param-info ref="params" :param-info="paramInfo"></detail-param-info>
+                <detail-comment-info ref="comment" :comment-info="commentInfo"></detail-comment-info> 
+                <GoodsListTwo ref="recommend" :goods="recommendList"></GoodsListTwo>
+            </div>
         </scroll>
+        <detail-bottom-bar @addGoodsCart="addToCart"></detail-bottom-bar>
+      <back-top @click.native="backClick" v-show="isShowBackTop" ></back-top>
     </div>
 </template>
 
@@ -21,12 +28,15 @@ import DetailShopInfo from './childComps/DetailShopInfo'
 import DetailGoodsInfo from './childComps/DetailGoodsInfo'
 import DetailParamInfo from './childComps/DetailParamInfo'
 import DetailCommentInfo from './childComps/DetailCommentInfo' 
+import DetailBottomBar from './childComps/DetailBottomBar'
 
 import Scroll from 'components/common/scroll/Scroll'
 import GoodsListTwo from 'components/content/goodtwo/GoodsListTwo' 
 
 import {getDetailInfo,getRecommend,Goods,Shop,GoodsParam} from 'network/detail'
 import {debounce} from 'common/utils'
+import {BACKTOP_DISTANCE,REDUCE} from "common/const";
+import {backTopMinix} from 'common/mixin'
 
     export default {
         name:'Detail',
@@ -42,10 +52,10 @@ import {debounce} from 'common/utils'
                 recommendList:[],
                 offetTopScroll:[],
                 getThemeTopY:null, 
-                currentIndex:0,
-                reduce:60
+                currentIndex:0, 
             }
-        },        
+        },    
+        mixins:[backTopMinix],    
         components:{
             DetailNav,
             DetailSwipper,
@@ -53,9 +63,10 @@ import {debounce} from 'common/utils'
             DetailShopInfo,
             DetailGoodsInfo,
             DetailParamInfo,
-            DetailCommentInfo,  
+            DetailCommentInfo, 
+            DetailBottomBar, 
             Scroll,
-            GoodsListTwo,
+            GoodsListTwo
         }, 
         created(){
             // 1.保存iid
@@ -95,9 +106,9 @@ import {debounce} from 'common/utils'
                 this.getThemeTopY = debounce(() => { 
                     this.offetTopScroll = []
                     this.offetTopScroll.push(0);
-                    this.offetTopScroll.push(this.$refs.params.$el.offsetTop-this.reduce);
-                    this.offetTopScroll.push(this.$refs.comment.$el.offsetTop-this.reduce);
-                    this.offetTopScroll.push(this.$refs.recommend.$el.offsetTop-this.reduce);
+                    this.offetTopScroll.push(this.$refs.params.$el.offsetTop-REDUCE);
+                    this.offetTopScroll.push(this.$refs.comment.$el.offsetTop-REDUCE);
+                    this.offetTopScroll.push(this.$refs.recommend.$el.offsetTop-REDUCE);
                     this.offetTopScroll.push(Number.MAX_VALUE);
                     // console.log(this.offetTopScroll,"offsetTop");
                 },200)
@@ -140,7 +151,22 @@ import {debounce} from 'common/utils'
                 //        this.currentIndex = i;
                 //        this.$refs.detailNav.currentIndex = this.currentIndex; 
                 //    }
-               }  
+               }
+                this.listenShowTop(position);
+            },
+            addToCart(){
+                // console.log("接收发出的事件！");
+                // 1.获取购物车所需要的显示信息
+                const product = {};
+                product.image = this.topImages[0];
+                product.title = this.goods.title;
+                product.desc = this.goods.desc;
+                product.price = this.goods.realPrice;
+                product.iid = this.iid; 
+                // 2.将商品添加到购物车里
+                // this.$store.cartList.push(product);
+                // this.$store.commit("addCart",product);
+                this.$store.dispatch("addCart",product);
             }
         }
     }
@@ -154,7 +180,7 @@ import {debounce} from 'common/utils'
     background-color: #fff;
 }
 .content{
-    height: calc(100% - 49px);
+    height: calc(100% - 49px - 58px);
 }
 .title {    
     box-shadow: 0px 5px 10px rgba(150,150,150,.08);
