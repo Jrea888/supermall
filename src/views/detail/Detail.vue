@@ -2,9 +2,6 @@
     <div  id="detail">    
         <detail-nav class="title_top" @itemClick="tabClick" ref="detailNav"></detail-nav> 
         <scroll class="content" ref="scroll" @scroll="contentScroll" :probe-type="3">
-            <ul>
-                <li v-for="item in $store.state.cartList">{{item}}</li>
-            </ul>
             <div> 
                 <detail-swipper :topImageInfo="topImages"></detail-swipper>
                 <detail-bases-info :goods="goods"></detail-bases-info> 
@@ -17,6 +14,8 @@
         </scroll>
         <detail-bottom-bar @addGoodsCart="addToCart"></detail-bottom-bar>
       <back-top @click.native="backClick" v-show="isShowBackTop" ></back-top>
+
+      <!-- <toast :message="message" :isShow="isShow"></toast> -->
     </div>
 </template>
 
@@ -31,12 +30,14 @@ import DetailCommentInfo from './childComps/DetailCommentInfo'
 import DetailBottomBar from './childComps/DetailBottomBar'
 
 import Scroll from 'components/common/scroll/Scroll'
-import GoodsListTwo from 'components/content/goodtwo/GoodsListTwo' 
+import GoodsListTwo from 'components/content/goodtwo/GoodsListTwo'
+// import Toast from 'components/common/toast/Toast' 
 
 import {getDetailInfo,getRecommend,Goods,Shop,GoodsParam} from 'network/detail'
 import {debounce} from 'common/utils'
 import {BACKTOP_DISTANCE,REDUCE} from "common/const";
 import {backTopMinix} from 'common/mixin'
+import {mapActions} from 'vuex'
 
     export default {
         name:'Detail',
@@ -53,8 +54,12 @@ import {backTopMinix} from 'common/mixin'
                 offetTopScroll:[],
                 getThemeTopY:null, 
                 currentIndex:0, 
+
+                // message:"",
+                // isShow:false
             }
         },    
+        // 混入
         mixins:[backTopMinix],    
         components:{
             DetailNav,
@@ -66,7 +71,8 @@ import {backTopMinix} from 'common/mixin'
             DetailCommentInfo, 
             DetailBottomBar, 
             Scroll,
-            GoodsListTwo
+            GoodsListTwo,
+            // Toast
         }, 
         created(){
             // 1.保存iid
@@ -119,6 +125,7 @@ import {backTopMinix} from 'common/mixin'
             })
         },
         methods:{
+            ...mapActions(['addCart']),
             // 详情图片加载完成 回调
             imageLoad(){
                 // 滚动图片刷新的目的是为了让图片全部加载 得到图片的高度
@@ -154,8 +161,8 @@ import {backTopMinix} from 'common/mixin'
                }
                 this.listenShowTop(position);
             },
-            addToCart(){
-                // console.log("接收发出的事件！");
+            // 接收发出的事件
+            addToCart(){ 
                 // 1.获取购物车所需要的显示信息
                 const product = {};
                 product.image = this.topImages[0];
@@ -166,7 +173,21 @@ import {backTopMinix} from 'common/mixin'
                 // 2.将商品添加到购物车里
                 // this.$store.cartList.push(product);
                 // this.$store.commit("addCart",product);
-                this.$store.dispatch("addCart",product);
+                // 3.添加成功后，弹出框提示
+                /**
+                 * 1. Actions里面可以返回Promise对象
+                 * 2. 使用...mapActions映射到这里
+                 */
+                // 方法1：
+                this.$store.dispatch("addCart",product).then(res => {
+                    // 弹出框 Toast
+                    this.$toast.show(res,2000);
+                    console.log(this.$toast);
+                });
+                // 方法2：
+                // this.addCart(product).then(res => {
+                //     console.log(res);
+                // }); 
             }
         }
     }
