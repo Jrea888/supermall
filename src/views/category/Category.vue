@@ -1,119 +1,49 @@
 <template> 
-    <div class="wrpper"> 
-        <ul class="content">
-          <button @click="btnClick">按钮</button>
-          <li>内容1</li>
-          <li>内容2</li>
-          <li>内容3</li>
-          <li>内容4</li>
-          <li>内容5</li>
-          <li>内容6</li>
-          <li>内容7</li>
-          <li>内容8</li>
-          <li>内容9</li>
-          <li>内容10</li>
-          <li>内容11</li>
-          <li>内容12</li>
-          <li>内容13</li>
-          <li>内容14</li>
-          <li>内容15</li>
-          <li>内容16</li>
-          <li>内容17</li>
-          <li>内容18</li>
-          <li>内容19</li>
-          <li>内容20</li>
-          <li>内容21</li>
-          <li>内容22</li>
-          <li>内容23</li>
-          <li>内容24</li>
-          <li>内容25</li>
-          <li>内容26</li>
-          <li>内容27</li>
-          <li>内容28</li>
-          <li>内容29</li>
-          <li>内容30</li>
-          <li>内容31</li>
-          <li>内容32</li>
-          <li>内容33</li>
-          <li>内容34</li>
-          <li>内容35</li>
-          <li>内容36</li>
-          <li>内容37</li>
-          <li>内容38</li>
-          <li>内容39</li>
-          <li>内容40</li>
-          <li>内容41</li>
-          <li>内容42</li>
-          <li>内容43</li>
-          <li>内容44</li>
-          <li>内容45</li>
-          <li>内容46</li>
-          <li>内容47</li>
-          <li>内容48</li>
-          <li>内容49</li>
-          <li>内容50</li>
-          <li>内容51</li>
-          <li>内容52</li>
-          <li>内容53</li>
-          <li>内容54</li>
-          <li>内容55</li>
-          <li>内容56</li>
-          <li>内容57</li>
-          <li>内容58</li>
-          <li>内容59</li>
-          <li>内容60</li>
-          <li>内容61</li>
-          <li>内容62</li>
-          <li>内容63</li>
-          <li>内容64</li>
-          <li>内容65</li>
-          <li>内容66</li>
-          <li>内容67</li>
-          <li>内容68</li>
-          <li>内容69</li>
-          <li>内容70</li>
-          <li>内容71</li>
-          <li>内容72</li>
-          <li>内容73</li>
-          <li>内容74</li>
-          <li>内容75</li>
-          <li>内容76</li>
-          <li>内容77</li>
-          <li>内容78</li>
-          <li>内容79</li>
-          <li>内容80</li>
-          <li>内容81</li>
-          <li>内容82</li>
-          <li>内容83</li>
-          <li>内容84</li>
-          <li>内容85</li>
-          <li>内容86</li>
-          <li>内容87</li>
-          <li>内容88</li>
-          <li>内容89</li>
-          <li>内容90</li>
-          <li>内容91</li>
-          <li>内容92</li>
-          <li>内容93</li>
-          <li>内容94</li>
-          <li>内容95</li>
-          <li>内容96</li>
-          <li>内容97</li>
-          <li>内容98</li>
-          <li>内容99</li>
-          <li>内容100</li>
-        </ul>
+    <div class="category">
+      <nav-tab class="home_nav"><div slot="center">商品分类</div></nav-tab>
+      <div class="cate_list">
+        <div class="cate_left">
+          <list-left :leftInfo="cateLeft" @getLeftData="getleft"></list-left>
+        </div>
+        <div class="cate_right">
+          <!-- 标题、图片、图片标题、链接 --> 
+          <shop-list :shopData="cateShop" :bigTitle="cateTitle"></shop-list>
+        </div>
+      </div>
     </div>
 </template>
 
 <script>
 import BScroll from 'better-scroll'
+  import BackTop from 'components/content/backTop/BackTop'
+
+import ListLeft from './childComps/ListLeft';
+import ShopList from './childComps/ShopList';
+
+import NavTab from '../../components/common/navbar/NavTab'
+
+import {getCateLeft,getCateListData} from 'network/category'
+
   export default {
     name: 'Category',
     data(){
       return {
-        scroll:null
+        scroll:null,
+        cateLeft:[],
+        cateShop:[],
+        cateTitle:{},
       }
+    },
+    components:{
+      ListLeft,
+      ShopList,
+      NavTab,
+      BackTop
+    },
+    created(){
+      // 请求数据
+      this.getLeftData();
+      this.getleft("3627");
     },
     // 组件 挂载 完之后
     mounted(){ 
@@ -122,26 +52,70 @@ import BScroll from 'better-scroll'
         click:true,
         pullUpLoad:true
       });
-
       this.scroll.on('scroll',position => {
-        console.log(position);
+        // console.log(position);
       });
-
       this.scroll.on('pullingUp',()=>{
-        console.log("上拉加载！");
+        // console.log("上拉加载！");
       });
     },
-    methods:{
-      btnClick(){
-        console.log("点击事件");
+    methods:{ 
+     getLeftData(){
+        getCateLeft().then(res => {
+          let data = res.data.category;
+          this.cateLeft = data.list;
+          // console.log(this.cateLeft);
+        }) 
+      },
+      getleft(id){
+        getCateListData(id).then(res => { 
+          this.cateTitle["title"] = res.data.info.title
+          this.cateShop = res.data.list;
+          // console.log( this.cateShop,"-----");
+          // console.log( this.cateTitle,"-----");
+        }); 
       }
     }
   }
 </script>
 
-<style>  
-.wrpper {
-  height: 300px;
-  background-color: #efe158; 
+<style>   
+.category {
+  height: 100vh;
 }
+
+.home_nav {
+  background-color: var(--color-tint);
+  color: #fff;
+}
+
+.cate_list{
+  height:  calc(100% - 49px) ;
+  display: flex;     
+}
+
+.cate_left{
+  width: 100px;
+  height: 100%;
+  background:rgb(243, 253, 252)
+}
+
+.li_bg {
+  background-color: white;
+}
+
+.content li {
+  width: 100%;
+  height: 46px;
+  text-align: center;
+  line-height: 46px;
+  border-bottom: 1px solid #bfbcbc;
+}
+
+.cate_right {
+  flex: 1;
+  height: 100%;
+  background: rgb(255, 234, 234);
+}
+
 </style>

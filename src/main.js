@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import toast from './components/common/toast'
 import FastClick from 'fastclick'
-import VueLazyLoad from 'vue-lazyload'
+import VueLazyLoad from 'vue-lazyload'  
 
 Vue.config.productionTip = false;
 // Vue 实例可以作为事件总线

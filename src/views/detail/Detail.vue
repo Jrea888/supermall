@@ -182,7 +182,6 @@ import {mapActions} from 'vuex'
                 this.$store.dispatch("addCart",product).then(res => {
                     // 弹出框 Toast
                     this.$toast.show(res,2000);
-                    console.log(this.$toast);
                 });
                 // 方法2：
                 // this.addCart(product).then(res => {

@@ -3,9 +3,10 @@
       <nav-tab class="home_nav"><div slot="center">购物街</div></nav-tab>  
       <tab-control ref="tabControl1" 
             :titles="['流行','新款','精选']" 
-            @tabClick="tabNavControl" v-show="isTabFixed"></tab-control>
+            @tabClick="tabNavControl" v-show="isTabFixed">
+      </tab-control>
       <!-- better-scroll 滚动封装组件 -->
-      <div  class="wrapper">
+      <div class="wrapper">
         <scroll class="content" 
                 ref="scroll" 
                 :probeType="3" 
@@ -24,7 +25,6 @@
       <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
     </div>
 </template>
-
 <script>
 import HomeSwiper from "./childComps/HomeSwiper";
 import HomeRecommendView from "./childComps/HomeRecommendView";
@@ -165,7 +165,6 @@ import {backTopMinix} from 'common/mixin'
     }
   }
 </script>
-
 <style scoped> 
 #home {
   height: 100vh;
@@ -180,6 +179,7 @@ import {backTopMinix} from 'common/mixin'
 .content { 
   height: 100%;
   overflow: hidden;  
+}
 
   /* position: absolute;
   left: 0;
@@ -187,6 +187,5 @@ import {backTopMinix} from 'common/mixin'
   top: 45px;
   bottom: 45px;
   overflow: hidden; */
-}
 
 </style>

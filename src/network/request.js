@@ -7,9 +7,8 @@ export function request(config){
         timeout:5000
     });
 
-    // 2.axios 拦截器  拦截请求 拦截响应 
-    instance.interceptors.request.use(config => {
-        // console.log(config,"请求配置信息");
+    // 2.axios 拦截器  拦截请求  
+    instance.interceptors.request.use(config => { 
         // 1.config 里面的信息不符合服务器的要求
 
         // 2.发送网络请求时，希望界面显示一个图片
@@ -19,7 +18,7 @@ export function request(config){
     },error => {
         console.error(error,"请求错误信息！");
     });
-    
+    // 拦截响应
     instance.interceptors.response.use(res => {
         console.log(res,"拦截响应结果");
         return res.data
