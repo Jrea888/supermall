@@ -1,5 +1,7 @@
 # supermall
 
+## 项目中数据接口已经过期，需要的添加老师微信 coderwhy00，微信号是coderwhy00，微信名字是coderwhy
+
 ## Project setup
 ```
 npm install
