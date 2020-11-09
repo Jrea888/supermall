@@ -3,7 +3,7 @@ import axios from 'axios'
 export function request(config){ 
     // 1.创建对象
     const instance = axios.create({
-        baseURL:'http://152.136.185.210:8000/api/z8',
+        baseURL:'http://152.136.185.210:8000/api/w6',
         timeout:5000
     });
 
@@ -19,13 +19,11 @@ export function request(config){
         console.error(error,"请求错误信息！");
     });
     // 拦截响应
-    instance.interceptors.response.use(res => {
-        console.log(res,"拦截响应结果");
+    instance.interceptors.response.use(res => { 
         return res.data
     },error => {
         console.error(error,"请求错误信息！");
     });
-
     // 3.发送真正的网络请求 返回 Axiospromise
     return instance(config);
 }

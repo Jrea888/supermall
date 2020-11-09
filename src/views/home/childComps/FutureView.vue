@@ -1,6 +1,6 @@
 <template>
     <div class="image_Future">
-        <a href="">
+        <a href="https://act.mogujie.com/zzlx67">
             <img src="~assets/image/home/recommend_bg.jpg" alt="">
         </a>
     </div>

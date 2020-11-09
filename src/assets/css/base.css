@@ -2,7 +2,7 @@
 
 /* :root 获取根元素 HTML */
 :root {
-  /* 定义变量 */
+  /* 定义变量的方式 */
   --color-text: #666;
   --color-high-text: #ff5777;
   --color-tint: #ff8198;

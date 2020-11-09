@@ -1,5 +1,5 @@
 /**
- * 抖动函数  事件监听相关方法 
+ * 防抖动函数  事件监听相关方法 
  * @param {*} func 回调函数
  * @param {*} delay  执行延时时间
  */
@@ -9,13 +9,16 @@ export function debounce(func,delay){
     if(timer){
       clearTimeout(timer);
     }
-    timer = setTimeout(() => {
-      // console.log("执行抖动函数");
+    timer = setTimeout(() => { 
       func.apply(this,args);
     },delay);
   }
 }
-
+/**
+ * 时间戳格式化
+ * @param {*} date 传入时间戳
+ * @param {*} fmt  时间格式 
+ */
 export function formatDate(date, fmt) {
   if (/(y+)/.test(fmt)) {
     fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
@@ -35,7 +38,10 @@ export function formatDate(date, fmt) {
   }
   return fmt;
 };
-
+/**
+ * 巧妙小算法
+ * @param {*} str 
+ */
 function padLeftZero (str) {
   return ('00' + str).substr(str.length);
 };
