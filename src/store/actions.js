@@ -1,6 +1,7 @@
 import {
   ADD_COUNTER,
-  ADD_TO_CART
+  ADD_TO_CART,
+  SUB_COUNTER
 } from './mutations-types'
 
 export default {
@@ -17,5 +18,13 @@ export default {
         resolve("添加到购物车");
       }
     });
+  },
+  // 货物增加
+  increment(context,payload){
+    context.commit(ADD_COUNTER,payload)
+  },
+  // 货物减少
+  decrement(context,payload){
+    context.commit(SUB_COUNTER,payload)
   }
 }

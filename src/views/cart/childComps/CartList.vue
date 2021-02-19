@@ -28,7 +28,7 @@ export default {
   },
   activated() {
     this.$refs.scroll.refresh();
-  },
+  }, 
   methods: {
     interDetailPage(info) {
       this.$router.push("/detail/" + info.iid);

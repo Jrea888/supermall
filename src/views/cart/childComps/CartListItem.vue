@@ -1,7 +1,7 @@
 <template>
   <div id="shop-item">
     <div class="item-selector">
-      <CheckButton :is-checked="itemInfo.checked" @click.native="isCheckedState"></CheckButton>
+      <CheckButton :is-checked="itemInfo.checked" @click.native.stop="isCheckedState"></CheckButton>
     </div>
     <div class="item-img">
       <img :src="itemInfo.image" alt="商品图片" />
@@ -11,7 +11,11 @@
       <div class="item-desc">商品描述: {{itemInfo.desc}}</div>
       <div class="info-bottom">
         <div class="item-price left">¥{{itemInfo.price}}</div>
-        <div class="item-count right">x{{itemInfo.count}}</div>
+        <div class="item-count right">
+          <button :disabled="isShowDisabled" @click.stop="decrement(itemInfo)">-</button>
+          {{itemInfo.count}}
+          <button @click.stop="increment(itemInfo)">+</button>
+        </div>
       </div>
     </div>
   </div>
@@ -33,9 +37,28 @@ export default {
       }
     }
   },
+  data(){
+    return {
+      isShowDisabled:false
+    }
+  },
   methods: {
     isCheckedState() {
       this.itemInfo.checked = !this.itemInfo.checked;
+    },
+    // 增加
+    increment(params){ 
+      this.$store.dispatch('increment',params);
+      if(params.count > 0){
+        return this.isShowDisabled = false;
+      }
+    },
+    // 减少
+    decrement(params){
+      this.$store.dispatch('decrement',params);
+      if(params.count <= 0){
+        return this.isShowDisabled = true;
+      }
     }
   }
 };
@@ -101,4 +124,9 @@ export default {
 .info-bottom .item-price {
   color: orangered;
 }
+
+.right button {
+  width: 25px;
+}
+ 
 </style>

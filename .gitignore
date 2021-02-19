@@ -20,3 +20,12 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+*.crt
+*.csr
+*.key
+*.jks
+**/cert/**/*.txt
+*.pfx
+package-lock.json
+package.json
